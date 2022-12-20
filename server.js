@@ -2,6 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const cors = require('cors');
+
+app.use(cors({ origin: ['http://localhost:3000'] }));
 
 app.use(bodyParser.json());
 
@@ -40,6 +43,21 @@ router.get('/entries', (req, res) => {
     });
   });
 
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
+router.post('/entries', (req, res) => {
+    const data = req.body;
+    const sql = 'INSERT INTO entries (title, body, createdby) VALUES ($1, $2, $3)';
+    const values = [data.title, data.body, data.createdby];
+    client.query(sql, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Failed to insert entry' });
+        } else {
+            res.send({ success: true });
+        }
+    });
+});
+  
+
+app.listen(4000, () => {
+  console.log('Server listening on port 4000');
 });
