@@ -1,5 +1,8 @@
 require('dotenv').config();
+const passport = require('passport');
+const SpotifyStrategy = require('passport-spotify').Strategy;
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
@@ -30,6 +33,23 @@ client.connect();
 const router = express.Router();
 
 app.use('/api', router);
+app.use( 
+  session({ 
+    secret: process.env.SESSION_SECRET, 
+    resave: false, 
+    saveUninitialized: false 
+  }) 
+);
+
+app.use(passport.initialize()); 
+app.use(passport.session());
+
+// passport.use( new SpotifyStrategy({ 
+//   clientID: process.env.SPOTIFY_CLIENT_ID, 
+//   clientSecret: process.env.SPOTIFY_CLIENT_SECRET, 
+//   callbackURL: 'http://localhost:4000/auth/spotify/callback' }, 
+//   (accessToken, refreshToken, expires_in, profile, done) => { 
+//     code to handle successful authentication goes here } ) );
 
 // Read all resources
 router.get('/entries', (req, res) => {
